@@ -18,7 +18,8 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@health/*": ["src/modules/health/*"],
-    }
+      "@health/*": ["src/modules/health/*"]
+    },
+    "resolveJsonModule": true
   }
 }
