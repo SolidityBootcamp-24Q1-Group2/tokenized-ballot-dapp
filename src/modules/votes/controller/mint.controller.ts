@@ -10,6 +10,7 @@ export class MintTokenController {
   public async mintToken(
     @Body() mintTokenDto: MintTokenDto,
   ): Promise<{ result: boolean }> {
+    console.log('mintTokenDto', mintTokenDto)
     const result = await this.mintTokenService.mintToken(mintTokenDto);
 
     return { result };

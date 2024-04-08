@@ -1,4 +1,4 @@
 export class MintTokenDto {
   address: `Ox${string}`
-  amount: number
+  amount: string
 }

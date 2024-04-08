@@ -45,7 +45,7 @@ export class MintTokenService {
         'CONTRACT_ADDRESS',
       ) as `0x${string}`,
       functionName: 'mint',
-      args: [mintTokenDto.address, parseEther(mintTokenDto.amount.toString())],
+      args: [mintTokenDto.address, parseEther(mintTokenDto.amount)],
     });
 
     await this.publicClient.waitForTransactionReceipt({
