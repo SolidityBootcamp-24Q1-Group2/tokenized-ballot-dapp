@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MintTokenDto } from '../dtos/mintTokens.dto';
 import { ConfigService } from '@nestjs/config';
-import * as chains from 'viem/chains';
+import { sepolia } from 'viem/chains';
 import {
   http,
   parseEther,
@@ -16,11 +16,9 @@ import * as tokenJson from '../../../../assets/MyToken.json';
 @Injectable()
 export class MintTokenService {
   walletClient: WalletClient;
-  publicClient: PublicClient;
+  publicClient;
   constructor(private configService: ConfigService) {
     const rpc_endpoint = this.configService.get<string>('RPC_ENDPOINT_URL');
-    const transport = http(rpc_endpoint);
-    console.log(rpc_endpoint);
 
     this.walletClient = createWalletClient({
       account: privateKeyToAccount(
@@ -28,19 +26,20 @@ export class MintTokenService {
           'MINTER_WALLET_PRIVATE_KEY',
         ) as `0x${string}`,
       ),
-      transport: transport,
-      chain: chains.sepolia,
+      transport: http(rpc_endpoint),
+      chain: sepolia,
     });
 
     this.publicClient = createPublicClient({
-      chain: chains.sepolia,
-      transport: transport,
+      chain: sepolia,
+      transport: http(rpc_endpoint),
     });
   }
+
   public async mintToken(mintTokenDto: MintTokenDto): Promise<boolean> {
     const hash = await this.walletClient.writeContract({
       account: this.walletClient.account,
-      chain: chains.sepolia,
+      chain: sepolia,
       abi: tokenJson.abi,
       address: this.configService.get<string>(
         'CONTRACT_ADDRESS',
@@ -49,12 +48,14 @@ export class MintTokenService {
       args: [mintTokenDto.address, parseEther(mintTokenDto.amount.toString())],
     });
 
+    await this.publicClient.waitForTransactionReceipt({
+      hash,
+    });
+
     const transaction_receipt = await this.publicClient.getTransactionReceipt({
       hash,
     });
 
-    console.log(transaction_receipt);
-
-    return true;
+    return true ? transaction_receipt.status === 'success' : false;
   }
 }

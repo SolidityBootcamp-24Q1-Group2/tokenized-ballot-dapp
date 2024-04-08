@@ -7,7 +7,11 @@ export class MintTokenController {
   constructor(private readonly mintTokenService: MintTokenService) {}
 
   @Post('/mint')
-  public async mintToken(@Body() mintTokenDto: MintTokenDto): Promise<void> {
-    await this.mintTokenService.mintToken(mintTokenDto);
+  public async mintToken(
+    @Body() mintTokenDto: MintTokenDto,
+  ): Promise<{ result: boolean }> {
+    const result = await this.mintTokenService.mintToken(mintTokenDto);
+
+    return { result };
   }
 }
